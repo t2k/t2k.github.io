@@ -8,8 +8,8 @@ highlighter: pygments
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : OS Finance
-tagline: Open Source Finance - The Good Parts
+title : Open Source Finance
+tagline: The Good Parts
 author :
   name : Ted T. Killilea
   email : lrrs259@gmail.com
