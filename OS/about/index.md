@@ -6,14 +6,13 @@ description: "the history of Open Source software"
 {% include JB/setup %}
 
 1. Client
-  CoffeeScript
-  Marionette
+  * CoffeeScript
+  * Marionette
 
 2. Server	
-  Express
-  MongoDB/Mongoose
+  + Express
+  + MongoDB/Mongoose
 
 
-1. Non-Open Source
-  .NET
-  Java
+1. Enterprise (not open sourced)
+  + .NET
