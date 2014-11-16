@@ -11,7 +11,7 @@ highlighter: pygments
 title : Open Source Finance
 tagline: The Good Parts
 author :
-  name : Ted T. Killilea
+  name : Ted Killilea
   email : lrrs259@gmail.com
   github : t2k
   twitter : t2k_NYC
@@ -88,9 +88,9 @@ JB :
     intensedebate :
       account : 123abc
     facebook :
-      appid : 123
-      num_posts: 5
-      width: 580
+      appid : 
+      num_posts: 
+      width: 
       colorscheme: light
    
   # Settings for analytics helper
@@ -100,13 +100,13 @@ JB :
   analytics :
     provider : google 
     google : 
-        tracking_id : 'UA-123-12'
+        tracking_id : 'xx'
     getclicky :
       site_id : 
     mixpanel :
         token : '_MIXPANEL_TOKEN_'
     piwik :
-        baseURL : 'myserver.tld/piwik' # Piwik installation address (without protocol)
+        baseURL : '' # Piwik installation address (without protocol)
         idsite : '1'                   # the id of the site on Piwik
 
   # Settings for sharing helper. 
