@@ -2,6 +2,7 @@
 layout: post
 title: "Endless Scrolling in Backbone.Marionette"
 description: "customizing behavior..."
+tagline: "--custom collection methods"
 category: [client-side] 
 tags: [Backbone.Collection, CS, MVC]
 ---
