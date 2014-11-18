@@ -8,12 +8,16 @@ tags: [Backbone.Collection, CS, MVC, AMD]
 ---
 {% include JB/setup %}
 
-##An MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html) approach
+###MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html)
 
 
-My primary goal when developing a modular client-side architecture is establishing a clear separation of responsibilities between views and data. I'm using [AMD-Asyncronous Modular Definition](http://requirejs.org/docs/whyamd.html#amd) in this example so the specification enforces a decoupled modular approach to the application design. Each module has its own self contained scope that cannot communicate directly with other modules outside of it's intended scope.
+My primary goal when developing a modular client-side application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async webApps, the strict role played by the **controller** can get a little *iffy.* But I digress... This example is using the [AMD-Asyncronous Modular Definition](http://requirejs.org/docs/whyamd.html#amd) specification, which enforces a decoupled modular design approach into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. 
 
-In this post, The abstract MODEL is a backbone collection, wrapping an array of data returned from an AJAX call. In Backbone, it is the MODELS responsibilty to make the async AJAX calls to the REST API, that's the Backbone way.  The abstact VIEW is a class extending from Backbobne.CompositeView, wrapping an HTML template that defines a user-interface (UI).  The abstract CONTROLLER exends from the Marionette.Controller class. The controller creates views and passes data to those views and sets up the intra-module, event driven communication between the MODELs and the VIEWs. The controller also coordinates the event-api handling the data marshalling between the REST-API and the VIEW presentation architecture.
+####Feeling the MVC Backbone.Marionette Flow
+
+There is so much out there on the Internet if you Google **Model-View-Controller** MVC, MVP, MVVC, MVVM etc.  I've read most of it and I'm sure you have too.  There's so many perpectives and opinions out there about MVC and I'm not here to solve that debate. The real world complex and everybody must approach their application architecture with the unique complexities in mind, as defined by their own full stack; we face a different reality whether we live in a JAVA, .NET or Linux/Open Source world. Furthermore, realities change if you are using an enterprise database; Oracle, SQL-Server, Postgress, MySQL or a NOSQL, MongoDB, Couch, Pouch, Slouch etc. world.
+
+In this post, we're ***MVC-flowing*** with Backbone.Marionette. The abstract **MODEL** is a backbone collection, wrapping an array of data returned from an AJAX call. In Backbone, it's the MODELS' responsibilty to make async/AJAX calls against REST API's, that's the Backbone way.  The abstact **VIEW** is a class extending from Backbobne.CompositeView, wrapping an HTML template that defines a user-interface (UI).  The abstract **CONTROLLER** exends from the Marionette.Controller class. The controller creates views and coordinates passing data to those views.  The controller also sets up the intra-module, event driven communication between the MODELs and the VIEWs. The controller coordinates the event-api handling and data-marshalling between the REST-API and the VIEW presentation architecture.  Have I lost you yet?  I'm a little confused too, hopefully a diagram will help.
 
 ###Diagram: Backbone.Marionette Model - View - Controller 
 ![Diagram](bbm-mvc-diagram.jpeg)
