@@ -1,16 +1,20 @@
 <div class="page-header">
-  <h1>{{ page.title }} {% if page.tagline %}<small>{{page.tagline}}</small>{% endif %}</h1>
+  <h3>{{ page.title }} {% if page.tagline %}<small>{{page.tagline}}</small>{% endif %}</h3>
 </div>
 
-<div class="row post-full">
-  <div class="col-xs-12">
+<div class="row">
+  <div class="col-xs-12 col-md-8 col-lg-7">
     <div class="date">
       <span>{{ page.date | date_to_long_string }}</span>
     </div>
     <div class="content">
       {{ content }}
     </div>
-
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-5">
+    {% assign posts_collate = site.posts %}
+    {% include JB/posts_collate %}    
+  </div>
   {% unless page.categories == empty %}
     <ul class="tag_box inline">
       <li><i class="glyphicon glyphicon-open"></i></li>
@@ -43,5 +47,4 @@
     </ul>
     <hr>
     <!-- {% include JB/comments %}-->
-  </div>
 </div>

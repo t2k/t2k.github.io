@@ -1,14 +1,13 @@
 ---
 layout: post
-title: "Endless Scrolling in Backbone.Marionette"
-description: "customizing behavior..."
-tagline: " -- customized collection behavior"
+title: "Endless Scrolling in Marionette"
+description: "customized backbone collection behavior"
 category: [client-side] 
-tags: [Backbone.Collection, CS, MVC, AMD]
+tags: [Backbone, Marionette, MVC, CoffeeScript, AMD, RequireJS]
 ---
 {% include JB/setup %}
 
-###MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html)
+####MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html)
 
 
 MVC, Model-View-Controller, blah, blah, blah. My primary goal when developing a client-side web application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async web apps, a strict definition of the role played by the ***controller*** can get a little *fuzzy.* But I digress... In this post, I'm using the [AMD](http://requirejs.org/docs/whyamd.html#amd) specification, and in doing so, this enforces the modular design concept built into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. This  approach may seem like overkil, especially when designing a simple demo, however as client side complexity grows the AMD 'building-block' approach pays off.
@@ -19,7 +18,7 @@ There is so much out there on the Internet about **MVC**.  If you Google **Model
 
 This post is about client-side development and we're ***MVC-flowing*** with Backbone.Marionette. The abstract **MODEL** is a backbone collection, wrapping an array of data returned from an AJAX call. In Backbone, it's the MODELS' responsibilty to make async/AJAX calls against REST API's, that's the Backbone way.  The abstact **VIEW** is a class extending from Backbobne.CompositeView, wrapping an HTML template that defines a user-interface (UI).  The abstract **CONTROLLER** exends from the Marionette.Controller class. The controller creates views and coordinates passing data to those views.  The controller also sets up the intra-module, event driven communication between the MODELs and the VIEWs. The controller coordinates the event-api handling and data-marshalling between the REST-API and the VIEW presentation architecture.  Have I lost you yet?  I'm a little confused too, hopefully a diagram will help.
 
-###Diagram: Backbone.Marionette Model - View - Controller 
+####Diagram: Backbone.Marionette Model - View - Controller 
 ![to do: Fancy Diagram](bbm-mvc-diagram.jpeg)
 
 ---
@@ -48,7 +47,7 @@ This post is about client-side development and we're ***MVC-flowing*** with Back
 
 ---
 
-### Templates Module
+#### Templates Module
 
 ~~~
 define (require) ->
@@ -61,7 +60,7 @@ define (require) ->
 ~~~
 
 
-###lpitems.htm
+####lpitems.htm
 The CompositeView template:
 **Very Important!** the extended CompositeView 
 class wraps its template in a ``div.scrollable-container`` tag. This layout and CSS is 
