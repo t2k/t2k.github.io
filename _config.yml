@@ -82,11 +82,11 @@ JB :
   comments :
     provider : disqus
     disqus :
-      short_name : jekyllbootstrap
+      short_name : osfinance
     livefyre :
-      site_id : 123
+      site_id : 368021
     intensedebate :
-      account : 123abc
+      account : 
     facebook :
       appid : 
       num_posts: 
