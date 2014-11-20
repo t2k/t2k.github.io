@@ -17,6 +17,7 @@ The code below is a request handler written in coffee-script that handles a mult
 My original goal was to upload a file into a mongoDB GridStore and I was gonna stop right there and call it a day, problem solved.  I'd achieved my goal, in fact I'd gone one better and used streams.  Good night, Bob's your Uncle! We can quit now.  But noooo, I'd been reading [Async JavaScript](https://pragprog.com/book/tbajs/async-javascript) and was very impressed by the [async.parallel](https://github.com/caolan/async#parallel) example but I didn't have a good use case. Plus, I also have a kid in college and I was trying to impress him with my open-source chops.  As we began early testing of our app it quickly became apparent the need to support multiple platforms with multiple versions of each image.  We needed image versions more sized for Desktop, Tablet, Mobile and really small for Thumb images. You know that commercial where you buy 1 suit at the regular price and you get 3 suits free?  Well [sharp](https://github.com/lovell/sharp) image processing with **Async.Parallel** is kinda like that. Upload one file and store 4 more for free...
 
 
+###Check it out
 <script src="https://gist.github.com/t2k/ae28bda9e194976ced03.js"></script>
 
 *For extra-bonus points: What does the 201/created JSON response look like?*
