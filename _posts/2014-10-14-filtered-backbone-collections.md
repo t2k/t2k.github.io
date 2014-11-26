@@ -10,7 +10,7 @@ tags: [Backbone, Marionette, MVC, CoffeeScript, AMD, RequireJS]
 ####MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html)
 
 
-MVC, Model-View-Controller, blah, blah, blah. My primary goal when developing a client-side web application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async web apps, a strict definition of the role played by the ***controller*** can get a little *fuzzy.* But I digress... In this post, I'm using the [AMD](http://requirejs.org/docs/whyamd.html#amd) specification, and in doing so, this enforces the modular design concept built into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. This  approach may seem like overkil, especially when designing a simple demo, however as client side complexity grows the AMD 'building-block' approach pays off.
+MVC, Model-View-Controller, blah, blah, blah. My primary goal when developing a client-side web application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async web apps, a strict definition of the role played by the ***controller*** can get a little *fuzzy.* But I digress... In this example, I'm using the [AMD](http://requirejs.org/docs/whyamd.html#amd) specification.   and by doing so it enforces modular design concept built into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. This  approach may seem like overkil, especially when designing a simple demo, however as client side complexity grows the AMD 'building-block' approach pays off.
 
 ####Feeling the MVC Backbone.Marionette Flow
 
@@ -20,10 +20,18 @@ This post is about client-side development and we're ***MVC-flowing*** with Back
 
 
 ####The VIEW: A Scrollable Region
-The hardest part for me was setting up the markup and CSS to make a scrollable region work within a Marionette View. I'm used to click events, change events, blur events and the like, but in order to create a UI that can emit scroll events one has to understand a bit more about HTML and CSS.  That's where the interaction between the html template and a Marionette View class that can repspond to scroll events took a little extra level of understanding on my part.  For this to work, we must wrap an outer DIV (or any block level element) with a ``max-height: 500:px; overflow-y: scroll;`` around an inner DIV with a ``max-height:100%``
+The hardest part for me was understanding the markup and CSS required to make a scrollable region work within a Marionette View. Working with click events, change events, blur events is straight forward. Understanding these user interactions is pretty obvious. In order to create a UI that will emit scroll events will require a bit more explicit HTML and CSS.  The interaction between the *html* in our template and the Marionette View class that repsponds to scroll events took a little extra level of understanding on my part.  For this to work, we must basically contrain a `div` with a `max-height` setting then have that wrap in inner `div`
 
+#### HTML
+~~~ html
+<div class="scrollable-container">
+  <div class="scrollable-inner">
+  <!-- repeatable item views --> 
+  </div>  
+</div>
+~~~
 
-####CSS rules
+#### CSS
 ~~~
 // marginal support of endless scrolling
 .scrollable-container {
@@ -42,14 +50,8 @@ The hardest part for me was setting up the markup and CSS to make a scrollable r
 }
 ~~~
 
-####lpitems.htm
-This simple template holds the scrollable list inside the Marionette.CompositeView 
+###The CompositeView Class:
 
-
-``<div class="scrollable-inner"> </div>``
-
-
-###The CompositeView template:
 ~~~
 
 LPList: class _listview extends AppViews.CompositeView
@@ -87,10 +89,10 @@ Notice above, the extended CompositeView class wraps its template like this:
 
 This interaction between the view's rendered template and it's CSS is critical in enabling the view both emit scroll from it's markup and listen to events. What we are doing here is wrapping a view in a contrained block element.  By setting a ``max-height:500px`` and ``overflow-y:scroll`` this enables the view to both emit the scroll event and the view's events hash
 
-~~~
+```coffeescript
   events: 
     "scroll": "checkScroll"
-~~~
+```
 
 can listen for a scroll event and respond with it *checkSroll* event.  The logic: if the scroll bar is close to the bottom, trigger the ``scroll:more:items`` event.  That's all we need to support endless scroll.
 
@@ -98,7 +100,12 @@ can listen for a scroll event and respond with it *checkSroll* event.  The logic
 
 ####Screenshot: Endless Scroll UI
 
-![Endless-Scroll](/assets/images/scroll-region.png "Example: Endless Scrolling")    
+<div class="row">
+  <div class="col-sm-12">
+    <img src="/assets/images/scroll-region.png" class="img-responsive" />
+  </div>
+</div>
+
 
 ---
 

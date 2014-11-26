@@ -2,7 +2,7 @@
 layout: post
 title: "async.parallel image processing"
 description: "streaming files to mongodb"
-tagline: "serve side image processing"
+tagline: "server side image processing"
 category: [server-side]
 tags: [mongodb, busboy, gridfs-stream, async, mongoose, nodejs, sharp, coffee-script]
 ---
