@@ -14,12 +14,91 @@ MVC, Model-View-Controller, blah, blah, blah. My primary goal when developing a 
 
 ####Feeling the MVC Backbone.Marionette Flow
 
-There is so much out there on the Internet about **MVC**.  If you Google **Model-View-Controller** MVC, MVP, MVVC, MVVM etc. you'll be overwhelmed.  I've read most of it and I'm sure you have too.  There's so many perpectives and opinions out there about MVC and I'm not here to solve the debate. Every developer faces unique complexities and must approach their application architecture by taking their own full stack into consideration.  We face different complexities whether we live in a JAVA, .NET or Linux/Open Source world. Furthermore, realities change if we're using an enterprise database such as  Oracle, SQL-Server, Postgress, MySQL or if you live in a NoSQL world like MongoDB, Couch, Pouch, Slouch etc. Let's abstract all the server-side issues away and just assume the back-end in this example is a fully supported REST-API, so we can focus on the client-side development.
+There is so much out there on the Internet about **MVC**.  If you Google **Model-View-Controller** MVC, MVP, MVVC, MVVM etc. you'll be overwhelmed.  I've read most of it and I'm sure you have too.  There's so many perpectives and opinions out there about MVC and I'm not here to solve the debate. Every developer faces unique complexities and must approach their application architecture by taking their own full stack into consideration.  We face different complexities whether we live in a JAVA, .NET or Linux/Open Source world. Furthermore, realities change if we're using an enterprise database such as  Oracle, SQL-Server, Postgress, MySQL or if you live in a NoSQL world like MongoDB, Couch, Pouch, Slouch etc. Let's abstract all the server-side issues away and just assume the back-end in this example is a fully supported REST-API so we can focus on the client-side development.
 
-This post is about client-side development and we're ***MVC-flowing*** with Backbone.Marionette. The abstract **MODEL** is a backbone collection, wrapping an array of data returned from an AJAX call. In Backbone, it's the MODELS' responsibilty to make async/AJAX calls against REST API's, that's the Backbone way.  The abstact **VIEW** is a class extending from Backbobne.CompositeView, wrapping an HTML template that defines a user-interface (UI).  The abstract **CONTROLLER** exends from the Marionette.Controller class. The controller creates views and coordinates passing data to those views.  The controller also sets up the intra-module, event driven communication between the MODELs and the VIEWs. The controller coordinates the event-api handling and data-marshalling between the REST-API and the VIEW presentation architecture.  Have I lost you yet?  I'm a little confused too, hopefully a diagram will help.
+This post is about client-side development and we're ***MVC-flowing*** with Backbone.Marionette. The abstract **MODEL** is a backbone collection, wrapping an array of data returned from an AJAX call. In Backbone, the MODEL has the responsibilty of making async/AJAX calls against the REST API's, that's the Backbone way.  The abstact **VIEW** is a class extending from Backbobne.CompositeView wrapping an HTML template which defines a user-interface.  The abstract **CONTROLLER** exends from the Marionette.Controller class. The controller creates views and coordinates passing data to those views.  The controller also sets up the intra-module, event driven communication between the MODELs and the VIEWs. The controller coordinates the event-api handling and data-marshalling between the REST-API and the VIEW presentation architecture.  Have I lost you yet?  I'm a little confused too, hopefully a diagram will help.
 
-####Diagram: Backbone.Marionette Model - View - Controller 
-![to do: Fancy Diagram](bbm-mvc-diagram.jpeg)
+
+####The VIEW: A Scrollable Region
+The hardest part initially for me was setting up the markup and CSS to make a scrollable region work within a Backbone.View. I'm used to click events, change events, blur events and the like, but in order to create a UI that can emit scroll events and a Marionette View class that can repspond to the scroll events we must first wrap an outer div (or any block level element will do) with a ``max-height; overflow-y: scroll;`` around an inner DIV with a ``max-height:100%``
+
+
+####CSS rules
+~~~
+// marginal support of endless scrolling
+.scrollable-container {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+.scrollable-inner {
+  max-height:100%;
+}
+
+@media all and (min-width: 1023px) {
+  .scrollable-container {
+    max-height: 640px;
+  }
+}
+~~~
+
+####lpitems.htm
+This simple template holds the scrollable list inside the Marionette.CompositeView 
+
+
+``<div class="scrollable-inner"> </div>``
+
+
+###The CompositeView template:
+~~~
+
+LPList: class _listview extends AppViews.CompositeView
+  template: _.template(Templates.lpItems)
+  childView:            LPItem
+  childViewContainer:   ".scrollable-inner"
+  className:            "scrollable-container"
+  ui:
+    scroll: ".scrollable-inner"
+              
+  events: 
+    "scroll": "checkScroll"
+    
+  collectionEvents:
+    "request": ->
+      NP.start()
+      NP.inc()
+
+    "sync error": ->
+      NP.done()
+
+  checkScroll: (e) =>
+    virtualHeight = @ui.scroll.height()
+    margin = .05 * virtualHeight  
+    scrollTop = @$el.scrollTop() + @$el.height()
+    @trigger "scroll:more:lpitems" if (scrollTop + margin) >= virtualHeight
+
+~~~
+
+Notice above, the extended CompositeView class wraps its template like this:
+
+~~~
+  className:            "scrollable-container"
+~~~
+
+This interaction between the view's rendered template and it's CSS is critical in enabling the view both emit scroll from it's markup and listen to events. What we are doing here is wrapping a view in a contrained block element.  By setting a ``max-height:500px`` and ``overflow-y:scroll`` this enables the view to both emit the scroll event and the view's events hash
+
+~~~
+  events: 
+    "scroll": "checkScroll"
+~~~
+
+can listen for a scroll event and respond with it *checkSroll* event.  The logic: if the scroll bar is close to the bottom, trigger the ``scroll:more:items`` event.  That's all we need to support endless scroll.
+
+<br/>
+
+####Screenshot: Endless Scroll UI
+
+![Endless-Scroll](/assets/images/scroll-region.png "Example: Endless Scrolling")    
+
 
 ---
 
@@ -48,7 +127,6 @@ This post is about client-side development and we're ***MVC-flowing*** with Back
 ---
 
 #### Templates Module
-
 ~~~
 define (require) ->
     heatmap:    require "text!apps/lp/list/templates/heatmap.htm"
@@ -57,69 +135,6 @@ define (require) ->
     layout:     require "text!apps/lp/list/templates/layout.htm"
     panel:      require "text!apps/lp/list/templates/panel.htm"
     title:      require "text!apps/lp/list/templates/title.htm"
-~~~
-
-
-####lpitems.htm
-The CompositeView template:
-**Very Important!** the extended CompositeView 
-class wraps its template in a ``div.scrollable-container`` tag. This layout and CSS is 
-crucial to enabling the view to trigger scroll events.  What we are doing here is wrapping
-a view in a contrained block element.  By setting a ``max-height:500px`` and ``overflow-y:scroll``
-it enables the view to trigger the custom scroll events and our view can listen via it's own 
-checkSroll event.  
-
-	LPList: class _listview extends AppViews.CompositeView
-	  template: _.template(Templates.lpItems)
-	  childView:            LPItem
-	  childViewContainer:   ".scrollable-inner"
-	  className:            "scrollable-container"
-	  ui:
-	    scroll: ".scrollable-inner"
-	              
-	  events: 
-	    "scroll": "checkScroll"
-	    
-	  collectionEvents:
-	    "request": ->
-	      NP.start()
-	      NP.inc()
-
-	    "sync error": ->
-	      NP.done()
-
-	  checkScroll: (e) =>
-	    virtualHeight = @ui.scroll.height()
-	    margin = .05 * virtualHeight  # 10%
-	    scrollTop = @$el.scrollTop() + @$el.height()
-	    #console.log "scroll", margin, virtualHeight, scrollTop if (scrollTop + margin) >= virtualHeight
-	    @trigger "scroll:more:lpitems" if (scrollTop + margin) >= virtualHeight
-
-
-
-
-~~~
-<div class="scrollable-inner">
-</div>
-~~~
-
-####CSS rules
-~~~
-// marginal support of endless scrolling
-.scrollable-container {
-  max-height: 500px;
-  overflow-y: scroll;
-}
-.scrollable-inner {
-  max-height:100%;
-}
-
-@media all and (min-width: 1023px) {
-  .scrollable-container {
-    max-height: 640px;
-  }
-}
-
 ~~~
 
 
