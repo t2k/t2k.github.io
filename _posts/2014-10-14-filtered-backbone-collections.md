@@ -20,7 +20,7 @@ This post is about client-side development and we're ***MVC-flowing*** with Back
 
 
 ####The VIEW: A Scrollable Region
-The hardest part initially for me was setting up the markup and CSS to make a scrollable region work within a Backbone.View. I'm used to click events, change events, blur events and the like, but in order to create a UI that can emit scroll events and a Marionette View class that can repspond to the scroll events we must first wrap an outer div (or any block level element will do) with a ``max-height; overflow-y: scroll;`` around an inner DIV with a ``max-height:100%``
+The hardest part for me was setting up the markup and CSS to make a scrollable region work within a Marionette View. I'm used to click events, change events, blur events and the like, but in order to create a UI that can emit scroll events one has to understand a bit more about HTML and CSS.  That's where the interaction between the html template and a Marionette View class that can repspond to scroll events took a little extra level of understanding on my part.  For this to work, we must wrap an outer DIV (or any block level element) with a ``max-height: 500:px; overflow-y: scroll;`` around an inner DIV with a ``max-height:100%``
 
 
 ####CSS rules
@@ -30,6 +30,7 @@ The hardest part initially for me was setting up the markup and CSS to make a sc
   max-height: 500px;
   overflow-y: scroll;
 }
+
 .scrollable-inner {
   max-height:100%;
 }
@@ -99,7 +100,6 @@ can listen for a scroll event and respond with it *checkSroll* event.  The logic
 
 ![Endless-Scroll](/assets/images/scroll-region.png "Example: Endless Scrolling")    
 
-
 ---
 
 <div role="tabpanel">
@@ -164,3 +164,15 @@ lpitem.htm:  the ItemView template
     </ul>
 </div>
 ~~~
+
+### MVC Interactions
+In this modular APP our **Model** makes async requests to a REST/API.  A **Controller**, instantiated by the modular App, is responsible for requesting data from the **Model** and passing that data along our **View** constructors and showing those views inside of whatever nested layout/view.  The *conroller* functions as a mediator between the *model* data and the *view*. The **View** listens at UI level for events triggered by user interactions... click, scroll, input etc.  *Views* trigger events up the chain to the *controller* and the *controller* gets to decide how to pass event's to models or in other cases to routeable apps.  In this specific case *scroll* events trigger a ``scroll:more:lpitems`` event up the chain.  The controller monitors these events like this::
+
+~~~
+@listenTo lpView, "scroll:more:lpitems", ->
+        msgBus.reqres.request "lp:fetch:more"
+~~~
+
+Here, the *controller* listens to events from it's *views* and passes them up the chain.  In our case the ***LP*** entity model listens to this custom event and springs into action, by fetching another page of items.  That's all there is to it.  The extended Marionette.CompositeView automagically updates it's childview item template because it listens to the @collection ``reset`` event causing it to renders itself with *more:items*
+
+...
