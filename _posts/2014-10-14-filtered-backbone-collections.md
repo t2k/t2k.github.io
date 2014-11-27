@@ -10,7 +10,7 @@ tags: [Backbone, Marionette, MVC, CoffeeScript, AMD, RequireJS]
 ####MVC - [MODEL](http://backbonejs.org/#Collection) [VIEW](http://marionettejs.com/docs/marionette.compositeview.html) [CONTROLLER](http://marionettejs.com/docs/marionette.controller.html)
 
 
-MVC, Model-View-Controller, blah, blah, blah. My primary goal when developing a client-side web application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async web apps, a strict definition of the role played by the ***controller*** can get a little *fuzzy.* But I digress... In this example, I'm using the [AMD](http://requirejs.org/docs/whyamd.html#amd) specification.   and by doing so it enforces modular design concept built into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. This  approach may seem like overkil, especially when designing a simple demo, however as client side complexity grows the AMD 'building-block' approach pays off.
+My primary goal when developing a client-side web application is to establish a clear separation of responsibilities between **views** and **model** data. In the world of async web apps, a strict definition of the role played by the ***controller*** can get a little *fuzzy.* But I digress... In this example, I'm using the [AMD](http://requirejs.org/docs/whyamd.html#amd) specification.   and by doing so it enforces modular design concept built into the application architecture. Each module has its own self contained scope and cannot communicate directly with other modules outside of it's intended scope. This  approach may seem like overkil, especially when designing a simple demo, however as client side complexity grows the AMD 'building-block' approach pays off.
 
 ####Feeling the MVC Backbone.Marionette Flow
 
@@ -173,7 +173,90 @@ lpitem.htm:  the ItemView template
 ~~~
 
 ### MVC Interactions
-In this modular APP our **Model** makes async requests to a REST/API.  A **Controller**, instantiated by the modular App, is responsible for requesting data from the **Model** and passing that data along our **View** constructors and showing those views inside of whatever nested layout/view.  The *conroller* functions as a mediator between the *model* data and the *view*. The **View** listens at UI level for events triggered by user interactions... click, scroll, input etc.  *Views* trigger events up the chain to the *controller* and the *controller* gets to decide how to pass event's to models or in other cases to routeable apps.  In this specific case *scroll* events trigger a ``scroll:more:lpitems`` event up the chain.  The controller monitors these events like this::
+Understanding the specific interactions among the Model, View, and Controller modules is the key to understanding the larger application architecture.  Communication among modules is event driven which also enables us to decouple out modules.  Starting with the backbone **Model**, it makes async requests to a REST/API as shown here by setting up a request handler on application's `msgBus`: 
+
+    getLPEntities: (options={}, filter={})->
+      {skip,take} = options
+      _coll.setPage skip
+      _coll.setPageSize take
+      _coll.setFilter filter
+      _.extend options, filter
+      _coll.fetch
+        reset: true
+        data: options
+        _coll
+
+    ...
+ 
+    msgBus.reqres.setHandler "lp:entities", ->
+      API.getLPEntities
+        skip: 0
+        take: 20
+ 
+
+The **Controller**, instantiated by a modular App, is responsible for requesting data from the **Model** and passing that data to the **View** as shown here from the **controller** initialize function:
+
+    class Controller extends AppController
+      initialize:->
+        @lpEntities = msgBus.reqres.request "lp:entities"
+        heatmaps = msgBus.reqres.request "lpheatmap:entities"
+
+        @layout = @getLayoutView()
+        @listenTo @layout, "show", =>
+          @heatMapRegion heatmaps
+          @titleRegion()
+          @panelRegion()
+          @lpRegion()
+        @show @layout,
+          loading:
+            entities: [@lpEntities, heatmaps]
+
+      lpRegion: ->
+        lpView = new Views.LPList
+          collection: @lpEntities
+
+        @listenTo lpView, "childview:lp:item:clicked", (child, args) ->
+          msgBus.events.trigger "lp:item:clicked", args.model
+        @listenTo lpView, "scroll:more:lpitems", ->
+          msgBus.reqres.request "lp:fetch:more"
+
+        @layout.listRegion.show lpView
+           
+  
+
+The **View** listens at UI level for events triggered by specific user interactions, in this specific case the view is responding to a `scroll` event and the *View* triggers an event for the controller to handle. 
+
+    LPList: class _listview extends AppViews.CompositeView
+      template: _.template(Templates.lpItems)
+      childView: LPItem
+      childViewContainer: ".scrollable-inner"
+      className: "scrollable-container"
+
+      ui:
+        scroll: ".scrollable-inner"
+
+      events:
+        "scroll": "checkScroll"
+
+      collectionEvents:
+        "request": ->
+          NP.start()
+          NP.inc()
+
+        "sync error": ->
+          NP.done()
+
+      checkScroll: (e) =>
+        virtualHeight = @ui.scroll.height()
+        margin = .05 * virtualHeight # 10%
+        scrollTop = @$el.scrollTop() + @$el.height()
+        @trigger "scroll:more:lpitems" if (scrollTop + margin) >= virtualHeight
+
+
+
+ to the *controller* and it gets to decide how to pass event's to models or in other cases to routeable apps.  In this specific case *scroll* events trigger a ``scroll:more:lpitems`` event up the chain.  
+
+As seen above, the **controller** monitors this event like this:
 
 ~~~
 @listenTo lpView, "scroll:more:lpitems", ->
